@@ -33,4 +33,4 @@ def subsetSum_repetition(numbs, B):
     return sol
 
 
-print(subsetSum_repetition([3, 2], 10))
+print(subsetSum_repetition([36,25,16,9,4,1], 42))

@@ -56,6 +56,10 @@ def longest_substring_wo_rep_NEW(str):
             if longest < F[i]:
                 longest = F[i]
                 idx_longest = curr_idx
+        else:
+            F[i] = len(str[str.index(str[curr_idx]) + 1: curr_idx + 1])
+
+        print(F[i])
 
     sol = ""
     for i in range(longest):
@@ -65,6 +69,6 @@ def longest_substring_wo_rep_NEW(str):
     return sol
 
 
-print(longest_substring_wo_rep_NEW("w"))
+print(longest_substring_wo_rep_NEW("aaaaaa"))
 
 
