@@ -53,3 +53,6 @@ def squareSummable_nth(n):
 
 
     return square_summables
+
+
+print(squareSummable_nth(12))
