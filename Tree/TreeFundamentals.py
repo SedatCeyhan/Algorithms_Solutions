@@ -229,8 +229,9 @@ class Solution:
 
     # Given a Binary Search Tree (BST), convert it to a Greater Tree such that
     # every key of the original BST is changed to the original key plus sum of all keys greater than the original key in BST.
-    def __init__(self):
-        self.sum = 0
+
+    # def __init__(self):
+    #     self.sum = 0
 
     def convertBST(self, root):
         if root:
@@ -277,26 +278,66 @@ class Solution:
         return child_depth + 1
 
 
+    # Given a binary tree, return the tilt of the whole tree.
+    # The tilt of a tree node is defined as the absolute difference between
+    # the sum of all left subtree node values and the sum of all right subtree node values. Null node has tilt 0.
+    # The tilt of the whole tree is defined as the sum of all nodes' tilt.
+
+    # def __init__(self):
+    #     self.tilt = 0
+
     def findTilt(self, root):
+        self.traverse(root)
+        return self.tilt
+
+    def traverse(self, root):
         if not root: return 0
-        if not root.left and not root.right: return 0
-        self.findTilt(root.left) + self.findTilt(root.right)
+        left, right = self.traverse(root.left), self.traverse(root.right)
+        self.tilt += abs(left - right)
+        return left + right + root.val
+
+    #Given two non-empty binary trees s and t, check whether tree t has
+    # exactly the same structure and node values with a subtree of s.
+    # A subtree of s is a tree consists of a node in s and all of this node's descendants.
+    # The tree s could also be considered as a subtree of itself.
+    def isSubtree(self, s, t):
+        if not t: return True
+        if not s: return False
+        if self.isSameTree(s, t): return True
+        if self.isSubtree(s.left, t) or self.isSubtree(s.right, t): return True
+        return False
 
 
+    # Given an n-ary tree, return the preorder traversal of its nodes' values. (DFS)
+
+   # RECURSION
+
+    # def __init__(self):
+    #     self.visited = []
+    #     self.DFS = []
+    #
+    # def preorder(self, root):
+    #     if not root: return []
+    #     self.visited.append(root)
+    #     self.DFS.append(root.val)
+    #     for child in root.children:
+    #         if child not in self.visited:
+    #             self.preorder(child)
+    #
+    #     return self.DFS
 
 
+    # ITERATIVE
+    def preorder(self, root):
+        if not root: return []
+        DFS = []
+        stack = [root]
+        while stack:
+            curr = stack.pop()
+            DFS.append(curr.val)
+            stack.extend(curr.children[::-1])
 
-
-
-
-
-
-
-
-
-
-
-
+        return DFS
 
 
 
