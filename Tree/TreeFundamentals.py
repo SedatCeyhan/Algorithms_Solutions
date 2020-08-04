@@ -1,5 +1,6 @@
 import math
 
+
 #Definition for a binary tree node.
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -313,19 +314,17 @@ class Solution:
    # RECURSION
 
     # def __init__(self):
-    #     self.visited = []
     #     self.DFS = []
     #
     # def preorder(self, root):
     #     if not root: return []
-    #     self.visited.append(root)
     #     self.DFS.append(root.val)
     #     for child in root.children:
-    #         if child not in self.visited:
+    #         if child not in self.DFS:
     #             self.preorder(child)
     #
     #     return self.DFS
-
+    #
 
     # ITERATIVE
     def preorder(self, root):
@@ -340,38 +339,331 @@ class Solution:
         return DFS
 
 
+    # Given an n-ary tree, return the postorder traversal of its nodes' values. (DFS)
+    def postorder(self, root):
+        if not root: return []
+        stack = [root]
+        DFS = []
+        while stack:
+            curr = stack.pop()
+            DFS.append(curr.val)
+            stack.extend(curr.children)
+
+        return DFS[::-1]
 
 
 
+    #You need to construct a string consists of parenthesis and integers from a binary tree with the preorder traversing way.
+    #The null node needs to be represented by empty parenthesis pair "()".
+    # And you need to omit all the empty parenthesis pairs that don't affect
+    # the one-to-one mapping relationship between the string and the original binary tree.
+    def tree2str(self, t):
+        if not t: return ""
+        if not t.left and not t.right: return str(t.val)
+        if not t.right: return str(t.val) + "(" + self.tree2str(t.left) + ")"
+        if not t.left: return str(t.val) + "()" + "(" + self.tree2str(t.right) + ")"
+        return str(t.val) + "(" + self.tree2str(t.left) + ")" + "(" + self.tree2str(t.right) + ")"
+
+
+    # Tree with t1 and t2's nodes summed
+    def mergeTrees(self, t1, t2):
+        if not t1 and not t2: return t1
+        if t1 and not t2: return t1
+        if not t1 and t2: return t2
+        t1.val += t2.val
+        left = self.mergeTrees(t1.left, t2.left)
+        right = self.mergeTrees(t1.right, t2.right)
+        t1.left = left
+        t1.right = right
+        return t1
 
 
 
+    # list of averages of levels
+    def levelOrderTop(self, root):
+        if not root: return []
+        traversal = [[root.val]]
+        l = self.levelOrderTop(root.left)
+        r = self.levelOrderTop(root.right)
+
+        i,j = 0, 0
+        while i < len(l) and j < len(r):
+            combined = l[i] + r[j]
+            traversal.append(combined)
+            i += 1
+            j += 1
+
+        if i == len(l):
+            for k in range(j, len(r)):
+                traversal.append(r[k])
+
+        if j == len(r):
+            for k in range(i, len(l)):
+                traversal.append(l[k])
+
+        return traversal
+
+
+    def averageOfLevels(self, root):
+        if not root: return []
+        traversal = self.levelOrderTop(root)
+        avg = []
+        for level in traversal:
+            avg.append(float(sum(level)/len(level)))
+
+        return avg
+
+
+    # whether there exists 2 nodes summing to target = k
+    def findTarget(self, root, k):
+        if not root: return False
+        vals = []
+        queue = [root]
+        while queue:
+            curr = queue.pop(0)
+            vals.append(curr.val)
+            if curr.left:
+                queue.append(curr.left)
+            if curr.right:
+                queue.append(curr.right)
+
+        for i in range(len(vals)):
+            if k - vals[i] in vals[i + 1: ]:
+                return True
+
+        return False
+
+
+    # trimmed tree with all node values between L and R
+    def trimBST(self, root, L, R):
+        if not root: return root
+        if root.val == L and root.val == R:
+            root.left = None
+            root.right = None
+            return root
+        if L < root.val and R > root.val:
+            left = self.trimBST(root.left, L, R)
+            right = self.trimBST(root.right, L, R)
+            root.left = left
+            root.right = right
+            return root
+        if L == root.val and R > root.val:
+            right = self.trimBST(root.right, L, R)
+            root.left = None
+            root.right = right
+            return root
+        if L < root.val and R == root.val:
+            left = self.trimBST(root.left, L , R)
+            root.left = left
+            root.right = None
+            return root
+        if L < root.val and R < root.val:
+            return self.trimBST(root.left, L, R)
+        else:
+            return self.trimBST(root.right, L, R)
+
+
+    # A special tree where each node has either 0 or 2 children
+    # Parent node's value is the smaller of the 2 children if it has children
+    # return the second smallest value in the tree if that value exists
+    def findSecondMinimumValue(self, root):
+        if not root or (not root.left and not root.right): return -1
+        if root.left.val == root.right.val:
+            L = self.findSecondMinimumValue(root.left)
+            R = self.findSecondMinimumValue(root.right)
+            if L == -1: return R
+            if R == -1: return L
+            return min(L, R)
+        if root.right.val > root.left.val:
+            L = self.findSecondMinimumValue(root.left)
+            if L != -1: return min(L, root.right.val)
+            return root.right.val
+        else:
+            R = self.findSecondMinimumValue(root.right)
+            if R != -1: return min(R, root.left.val)
+            return root.left.val
+
+
+    # Longest path question where each node in the path has to have the same val
+    def longestUnivaluePath(self, root):
+
+        if not root: return 0
+        self.path = 0
+
+        def pathOfNode(node):
+            if not node: return 0
+            left_path, right_path = 0, 0
+            left_depth, right_depth = pathOfNode(node.left), pathOfNode(node.right)
+            if node.left and node.val == node.left.val:
+                left_path = 1 + left_depth
+            if node.right and node.val == node.right.val:
+                right_path = 1 + right_depth
+
+            self.path = max(self.path, left_path + right_path)
+            return max(left_path, right_path)
+
+
+        pathOfNode(root)
+        return self.path
+
+
+    def searchBST(self, root, val):
+        if not root: return None
+        while root:
+            if root.val < val:
+                root = root.right
+            elif root.val > val:
+                root = root.left
+            else: return root
+        return None
+
+    # RECURSIVE:
+
+    # def searchBST(self, root, val):
+    #     if not root or root.val == val: return root
+    #     if val < root.val:
+    #         return self.searchBST(root.left, val)
+    #     else:
+    #         return self.searchBST(root.right, val)
+
+
+    def insertIntoBST(self, root, val):
+        if not root: return TreeNode(val)
+        if val < root.val:
+            left = self.insertIntoBST(root.left, val)
+            root.left = left
+        else:
+            right = self.insertIntoBST(root.right, val)
+            root.right = right
+
+        return root
+
+
+    # Whether 2 trees have the same sequence of leaves
+    def getLeafSequence(self, root):
+        if not root: return []
+        stack = [root]
+        leaves = []
+        while stack:
+            curr = stack.pop()
+            if not curr.left and not curr.right: leaves.append(curr.val)
+            if curr.right: stack.append(curr.right)
+            if curr.left: stack.append(curr.left)
+
+        return leaves
+
+    def leafSimilar(self, root1, root2):
+        leaves1 = self.getLeafSequence(root1)
+        leaves2 = self.getLeafSequence(root2)
+        return leaves1 == leaves2
 
 
 
+    # In order traversal formation of a tree
+    def increasingBST(self, root):
+        self.nodes = []
+        def inOrderTraversal(root):
+            if root:
+                inOrderTraversal(root.left)
+                self.nodes.append(root)
+                inOrderTraversal(root.right)
+
+        inOrderTraversal(root)
+        if len(self.nodes) == 0: return None
+        for i in range(len(self.nodes)-1):
+            self.nodes[i].left = None
+            self.nodes[i].right = self.nodes[i + 1]
+
+        return self.nodes[0]
+
+    # Sum of all nodes whose values >= L and <= R
+    def rangeSumBST(self, root, L, R):
+        if not root: return 0
+        if L == root.val == R:
+            return L
+        if L == root.val  and root.val < R:
+            return root.val + self.rangeSumBST(root.right, L, R)
+        if L < root.val and root.val == R:
+            return root.val + self.rangeSumBST(root.left, L, R)
+        if L < root.val and R < root.val:
+            return self.rangeSumBST(root.left, L, R)
+        if L > root.val and R > root.val:
+            return self.rangeSumBST(root.right, L, R)
+        else:
+            return root.val + self.rangeSumBST(root.left, L, root.val) + self.rangeSumBST(root.right, root.val, R)
+
+
+    # Is tree formed by unique vals
+    def isUnivalTree(self, root):
+        queue  = [root]
+        nodes = []
+        while queue:
+            curr = queue.pop(0)
+            nodes.append(curr.val)
+            if curr.left: queue.append(curr.left)
+            if curr.right: queue.append(curr.right)
+
+        return len(set(nodes)) == 1
 
 
 
+    # Given two node values, return whether those nodes are cousins (same height, different parents)
+    def isCousins(self, root, x, y):
+        queue = [(root, 0, None)]
+        depthParent_dict = {}
+        while queue:
+            curr = queue.pop(0)
+            depthParent_dict[curr[0].val] = (curr[1], curr[2])
+            if curr[0].left:
+                queue.append((curr[0].left, curr[1] + 1, curr[0]))
+            if curr[0].right:
+                queue.append((curr[0].right, curr[1] + 1, curr[0]))
+
+        return depthParent_dict[x][0] == depthParent_dict[y][0] and depthParent_dict[x][1] != depthParent_dict[y][1]
 
 
+    # all paths from root to leaf and their sum as integer
+    def sumRootToLeaf(self, root):
 
+        def allPaths(root):
+            if not root: return ""
+            if not root.left and not root.right: return str(root.val)
+            paths = []
+            if root.left:
+                for path in allPaths(root.left):
+                    paths.append(str(root.val) + path)
 
+            if root.right:
+                for path in allPaths(root.right):
+                    paths.append(str(root.val) + path)
 
+            return paths
 
+        paths = allPaths(root)
+        sum = 0
+        for path in paths:
+            sum += int(path, 2)
+        return sum
 
+    # Nodes that have no siblings
+    def getLonelyNodes(self, root):
+        if not root: return []
+        queue = [root]
+        lonelyNodes = []
+        while queue:
+            curr = queue.pop(0)
+            if curr.left and curr.right:
+                queue.append(curr.left)
+                queue.append(curr.right)
 
+            elif curr.left:
+                queue.append(curr.left)
+                lonelyNodes.append(curr.left.val)
+            elif curr.right:
+                queue.append(curr.right)
+                lonelyNodes.append(curr.right.val)
 
-
-
-
-
-
-
-
-
-
-
-
+        return lonelyNodes
 
 
 
