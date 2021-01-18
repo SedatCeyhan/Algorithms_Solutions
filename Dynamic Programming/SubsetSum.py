@@ -37,4 +37,4 @@ def subsetSum(numbs, B):
     return sol
 
 
-print(subsetSum([9,3,3,2,2,5,5,1, 5, 5, 6, 4], 10))
+print(subsetSum([9,3,3,2,2,-5,5,1, 5, 5, 6, 4], -2))

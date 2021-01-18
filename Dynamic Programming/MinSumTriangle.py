@@ -23,3 +23,17 @@ print(minSumTriangle([
      [1],
     [2,3]
 ]))
+
+
+
+# bottom-up, O(n) space
+def minimumTotal(triangle):
+    if not triangle: return 0
+    dp = triangle[-1]
+    for row in range(len(triangle) - 2, -1, -1):
+        temp = []
+        for i in range(len(triangle[row])):
+            temp.append(min(triangle[row][i] + dp[i], triangle[row][i] + dp[i + 1]))
+        dp = temp
+
+    return dp[0]

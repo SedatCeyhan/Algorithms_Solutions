@@ -19,4 +19,4 @@ def numSquares(n):
 
     return dp[n]
 
-print(numSquares(113))
+print(numSquares(13))

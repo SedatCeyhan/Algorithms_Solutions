@@ -21,4 +21,4 @@ def numSquares(n):
 
     return dp[n]
 
-print(numSquares(12))
+print(numSquares(19))

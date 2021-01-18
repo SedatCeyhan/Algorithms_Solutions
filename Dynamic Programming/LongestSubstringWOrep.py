@@ -36,11 +36,11 @@ def longest_substring_wo_rep(str):
 
 #print(longest_substring_wo_rep("sedattatokp"))
 
-def longest_substring_wo_rep_NEW(str):
+def longest_substring_wo_rep_NEW(STR):
 
-    if len(str) == 0: return ""
+    if len(STR) == 0: return ""
 
-    n = len(str)
+    n = len(STR)
     F = []
 
     for i in range(n + 1):
@@ -51,24 +51,23 @@ def longest_substring_wo_rep_NEW(str):
     for i in range(1, n + 1):
         curr_idx = i - 1
         prev_longest_length = F[i - 1]
-        if str[curr_idx] not in str[(i - prev_longest_length) - 1 : curr_idx]:
+        if STR[curr_idx] not in STR[(i - prev_longest_length) - 1 : curr_idx]:
             F[i] = prev_longest_length + 1
             if longest < F[i]:
                 longest = F[i]
                 idx_longest = curr_idx
         else:
-            F[i] = len(str[str.index(str[curr_idx]) + 1: curr_idx + 1])
-
-        print(F[i])
+            F[i] = len(STR[curr_idx - STR[:curr_idx][::-1].index(STR[curr_idx]) : curr_idx + 1])
 
     sol = ""
     for i in range(longest):
-        sol = str[idx_longest] + sol
+        sol = STR[idx_longest] + sol
         idx_longest -= 1
 
     return sol
 
 
-print(longest_substring_wo_rep_NEW("aaaaaa"))
+print(longest_substring_wo_rep_NEW("sedatdatokp"))
+print(longest_substring_wo_rep("sedatdatokp"))
 
 

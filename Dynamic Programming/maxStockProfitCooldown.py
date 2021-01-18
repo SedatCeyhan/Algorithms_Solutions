@@ -1,31 +1,28 @@
-class Solution:
-    def maxProfit(self, prices):
-        n = len(prices)
-        if n < 2: return 0
+def maxProfit(prices):
+    n = len(prices)
+    if n <= 1: return 0
+    dp = [[-prices[0], 0], [max(-prices[0], -prices[1]), max(0, -prices[0] + prices[1])]]
+    for day in range(2, n):
+        curr_buy = max(dp[-2][1] - prices[day], dp[-1][0])
+        curr_sell = max(dp[-1][0] + prices[day], dp[-1][1])
+        dp.append([curr_buy, curr_sell])
 
-        dp = []
-        for day in range(n):
-            dp.append([0,0,0,0])
+    return dp[-1][1]
 
-        dp[0] = [-prices[0], 0, -prices[0], 0]
-        dp[1] = [-prices[1], -prices[0] + prices[1], max(-prices[0], -prices[1]), max(0, -prices[0] + prices[1])]
 
-        max_profit = max(dp[0][1], dp[1][1])
 
-        for day in range(2, n):
-            if day == n - 1:
-                dp[day][0] = 0
-                dp[day][1] = dp[day - 1][2] + prices[day]
-                if max_profit < dp[day][1]: max_profit = dp[day][1]
-                break
 
-            dp[day][0] = dp[day - 2][3] - prices[day]
-            dp[day][1] = dp[day - 1][2] + prices[day]
-            dp[day][2] = max(dp[day][0], dp[day - 1][2])
-            dp[day][3] = max(dp[day][1], dp[day - 1][3])
-            if max_profit < dp[day][1]: max_profit = dp[day][1]
 
-        return max_profit
+def maxProfit_NO_Cooldown(prices):
+    n = len(prices)
+    if n < 2: return 0
+    dp = [[-prices[0], 0], [max(-prices[0], -prices[1]), max(0, prices[1] - prices[0])]]
+    for day in range(2, n):
+        curr_buy = max(dp[-1][0], -prices[day] + dp[-1][1])
+        curr_sell = max(dp[-1][1], prices[day] + dp[-1][0])
+        dp.append([curr_buy, curr_sell])
 
-sol = Solution()
-print(sol.maxProfit([4,2,1]))
+    return dp[-1][1]
+
+
+print(maxProfit_NO_Cooldown([100, 180, 260, 310, 40, 535, 695]))

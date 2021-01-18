@@ -1,23 +1,18 @@
 def wordBreak(s, wordDict):
+    if not wordDict or not s: return False
     n = len(s)
-
-    # Base case: empty string is a valid word!
-    F = [True]
-
-    # List holding the indices at which F[i] = TRUE
-    valid_indices = [0]
+    dp = [False] * (n + 1)
+    dp[0] = True
 
     for i in range(1, n + 1):
-        F.append(False)
+        for j in range(i, 0, -1):
+            dp[i] = (s[j-1:i] in wordDict) and dp[j - 1]
+            if dp[i]: break
 
-    for i in range(1, n + 1):
-        for w in valid_indices:
-            if F[w] and (s[w : i] in wordDict):
-                F[i] = True
-                valid_indices.append(i)
-                break
+    return dp[n]
 
-    return F[n]
+
+
 
 
 

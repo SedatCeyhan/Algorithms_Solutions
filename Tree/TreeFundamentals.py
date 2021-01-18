@@ -134,6 +134,23 @@ class Solution:
 
         return paths
 
+
+
+    def binaryTreePaths2(self, root):
+        if not root: return []
+        paths = []
+        stack = [(root, "")]
+        while stack:
+            curr_node, prev_path = stack.pop()
+            curr_path = prev_path + "->" + str(curr_node.val)
+            if curr_node.right: stack.append((curr_node.right, curr_path))
+            if curr_node.left: stack.append((curr_node.left, curr_path))
+            if not curr_node.left and not curr_node.right: paths.append(curr_path[2:])
+
+        return paths
+
+
+
     # Given a non-empty binary search tree and a target value, find the value in the BST that is closest to the target.
     def closestValue(self, root, target):
         min_distance = abs(root.val - target)
@@ -284,18 +301,19 @@ class Solution:
     # the sum of all left subtree node values and the sum of all right subtree node values. Null node has tilt 0.
     # The tilt of the whole tree is defined as the sum of all nodes' tilt.
 
-    # def __init__(self):
-    #     self.tilt = 0
-
     def findTilt(self, root):
-        self.traverse(root)
-        return self.tilt
+        self.tilt = 0
 
-    def traverse(self, root):
-        if not root: return 0
-        left, right = self.traverse(root.left), self.traverse(root.right)
-        self.tilt += abs(left - right)
-        return left + right + root.val
+        def sumOfNodes(node):
+            if node:
+                left_sum = sumOfNodes(node.left)
+                right_sum = sumOfNodes(node.right)
+                self.tilt += abs(left_sum - right_sum)
+                return left_sum + right_sum + node.val
+            return 0
+
+        sumOfNodes(root)
+        return self.tilt
 
     #Given two non-empty binary trees s and t, check whether tree t has
     # exactly the same structure and node values with a subtree of s.
@@ -397,7 +415,7 @@ class Solution:
             for k in range(j, len(r)):
                 traversal.append(r[k])
 
-        if j == len(r):
+        else:
             for k in range(i, len(l)):
                 traversal.append(l[k])
 
@@ -486,25 +504,27 @@ class Solution:
 
     # Longest path question where each node in the path has to have the same val
     def longestUnivaluePath(self, root):
+        self.uniPath = 0
 
-        if not root: return 0
-        self.path = 0
+        def traverseUni(node):
+            if node:
+                L, R = traverseUni(node.left), traverseUni(node.right)
+                if node.left and node.left.val == node.val:
+                    L += 1
+                else:
+                    L = 0
+                if node.right and node.right.val == node.val:
+                    R += 1
+                else:
+                    R = 0
 
-        def pathOfNode(node):
-            if not node: return 0
-            left_path, right_path = 0, 0
-            left_depth, right_depth = pathOfNode(node.left), pathOfNode(node.right)
-            if node.left and node.val == node.left.val:
-                left_path = 1 + left_depth
-            if node.right and node.val == node.right.val:
-                right_path = 1 + right_depth
+                self.uniPath = max(self.uniPath, L + R)
+                return max(L, R)
+            return 0
 
-            self.path = max(self.path, left_path + right_path)
-            return max(left_path, right_path)
+        traverseUni(root)
+        return self.uniPath
 
-
-        pathOfNode(root)
-        return self.path
 
 
     def searchBST(self, root, val):
@@ -595,15 +615,18 @@ class Solution:
 
     # Is tree formed by unique vals
     def isUnivalTree(self, root):
-        queue  = [root]
-        nodes = []
+        if not root: return True
+        uniVal = root.val
+        queue = [root]
         while queue:
             curr = queue.pop(0)
-            nodes.append(curr.val)
-            if curr.left: queue.append(curr.left)
-            if curr.right: queue.append(curr.right)
+            if uniVal != curr.val: return False
+            if curr.left:
+                queue.append(curr.left)
+            if curr.right:
+                queue.append(curr.right)
+        return True
 
-        return len(set(nodes)) == 1
 
 
 
@@ -666,6 +689,71 @@ class Solution:
         return lonelyNodes
 
 
+    def pathSum2(self, root, sum):
+        if not root: return []
+        paths = []
+        stack = [(root, [], 0)]
+        while stack:
+            curr_node, pathSoFar, sumSoFar = stack.pop()
+            sumSoFar += curr_node.val
+            path = pathSoFar + [curr_node.val]
+            if curr_node.right:
+                stack.append((curr_node.right, path, sumSoFar))
+            if curr_node.left:
+                stack.append((curr_node.left, path, sumSoFar))
+            if (not curr_node.left and not curr_node.right) and sumSoFar == sum: paths.append(path)
+
+        return paths
+
+    # Find the number of paths that sum to a given value.
+    # The path does not need to start or end at the root or a leaf,
+    # but it must go downwards (traveling only from parent nodes to child nodes).
+    def pathSum3(self, root, target):
+        if not root: return 0
+        stack = [(root, [0], 0)]
+        sol = 0
+        while stack:
+            curr_node, sumsSoFar, sum = stack.pop()
+            sum += curr_node.val
+            if sum - target in sumsSoFar: sol += sumsSoFar.count(sum - target)
+            currSums = sumsSoFar + [sum]
+            if curr_node.right:
+                stack.append((curr_node.right, currSums, sum))
+            if curr_node.left:
+                stack.append((curr_node.left, currSums, sum))
+
+        return sol
+
+
+    def maxPathSum(self, root):
+        if not root: return 0
+        self.maxSum = -float('inf')
+
+        def pathSum(root):
+            if root:
+                L = pathSum(root.left)
+                R = pathSum(root.right)
+                self.maxSum = max(self.maxSum, root.val, root.val + L, root.val + R, root.val + L + R)
+                return max(root.val, root.val + L, root.val + R)
+            return 0
+
+        pathSum(root)
+        return self.maxSum
+
+
+
+    def sumNumbers(self, root):
+        if not root: return 0
+        sum = 0
+        stack = [(root, 0)]
+        while stack:
+            curr, prevNum = stack.pop()
+            currNum = curr.val + prevNum * 10
+            if not curr.left and not curr.right: sum += currNum
+            if curr.right: stack.append((curr.right, currNum))
+            if curr.left: stack.append((curr.left, currNum))
+
+        return sum
 
 
 
@@ -675,14 +763,15 @@ class Solution:
 
 
 
-
-
-
-
-
-
-
-
+sol = Solution()
+root = TreeNode(10, TreeNode(5), TreeNode(-3))
+root.left.left = TreeNode(3)
+root.left.right = TreeNode(2)
+root.right.right = TreeNode(11)
+root.left.left.left = TreeNode(3)
+root.left.left.right = TreeNode(-2)
+root.left.right.right = TreeNode(1)
+print(sol.pathSum3(root, 8))
 
 
 

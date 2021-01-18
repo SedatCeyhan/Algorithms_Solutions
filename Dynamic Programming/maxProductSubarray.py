@@ -22,8 +22,7 @@ def maxProduct(nums):
 
 
 
-print(maxProduct([1,2,-1,-2,2,1,-2,1,4,-5,4]))
+print(maxProduct([1,2,-1,-2,2,1,-2,1,4,-5,4,0]))
 
 
-print((10,0) + (8, 1))
 

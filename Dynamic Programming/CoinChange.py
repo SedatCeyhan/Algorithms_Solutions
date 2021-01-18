@@ -1,22 +1,21 @@
 def coinChange(coins, amount):
-    # dp[i] = min # of coins to sum i
+    if not coins or amount == 0: return 0
+    coins.sort()
+
     dp = [0] * (amount + 1)
 
-    for m in range(1, amount + 1):
-        min_coin_count = float('inf')
+    for b in range(1, amount + 1):
+        min_coins = float("inf")
         for coin in coins:
-            if coin <= m:
-                cand = 1 + dp[m - coin]
-                if dp[m - coin] != -1 and cand < min_coin_count:
-                    min_coin_count = cand
+            if coin > b: break
+            if dp[b - coin] != -1:
+                if (1 + dp[b - coin]) < min_coins:
+                    min_coins = 1 + dp[b - coin]
 
-        if min_coin_count != float('inf'):
-            dp[m] = min_coin_count
-        else:
-            dp[m] = -1
+        if min_coins == float("inf"): dp[b] = -1
+        else: dp[b] = min_coins
 
     return dp[amount]
 
-print(coinChange([2], 11))
 
-
+print(coinChange([1,2,5], 14))

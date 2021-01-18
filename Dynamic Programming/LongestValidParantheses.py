@@ -41,10 +41,6 @@ def longestValidParantheses(s):
                         longest = F[i]
                         #idx_longest = i - 1
 
-                else:
-                    F[i] = 0
-            else:
-                F[i] = 0
     return longest
     # sol = ""
     # for i in range(longest):

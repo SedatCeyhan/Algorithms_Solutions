@@ -26,5 +26,5 @@ def LongestPalindromicSubstring(str):
 
     return longest_palindrome
 
-print(LongestPalindromicSubstring("seddessrt"))
+print(LongestPalindromicSubstring("seddresksert"))
 
